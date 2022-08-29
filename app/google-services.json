@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "336924379598",
+    "firebase_url": "https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "lazywriter-fe624",
+    "storage_bucket": "lazywriter-fe624.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:336924379598:android:538c1030b9e3eb2607c39f",
+        "android_client_info": {
+          "package_name": "com.example.lazywriter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "336924379598-mal75e0gc3ooqn468ulpo81lq73hj67i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuQW2Fi22IQgouL9c2SU9V8uLDl7YgRJw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "336924379598-mal75e0gc3ooqn468ulpo81lq73hj67i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
