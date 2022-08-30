@@ -58,7 +58,7 @@ class reg_Activity : AppCompatActivity() {
                     val uid = currenyUser!!.uid
                     val userMap = HashMap<String, String>()
                     userMap["name"] = user.username
-                    val database = FirebaseDatabase.getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users")
+                    val database = FirebaseDatabase.getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(uid)
                     database.setValue(userMap).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             //   val intent = Intent(applicationContext, MainActivity::class.java)
@@ -67,8 +67,6 @@ class reg_Activity : AppCompatActivity() {
                         }
                     }
                 } else {
-// If sign in fails, display a message to the user.
-                    //Log.w(TAG, "createUserWithEmail:failure", task.exception)
                     Toast.makeText(
                         baseContext, task.exception.toString(),
                         Toast.LENGTH_SHORT
