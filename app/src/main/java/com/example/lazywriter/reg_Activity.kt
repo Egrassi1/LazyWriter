@@ -56,10 +56,22 @@ class reg_Activity : AppCompatActivity() {
                 if (task.isSuccessful) {
                     val currenyUser = auth.currentUser
                     val uid = currenyUser!!.uid
-                    val userMap = HashMap<String, String>()
-                    userMap["name"] = user.username
-                    val database = FirebaseDatabase.getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/").getReference("Users").child(uid)
-                    database.setValue(userMap).addOnCompleteListener { task ->
+                    //val userMap = HashMap<String, String>()
+                    val userMap = Preset("name", user.username)
+                    //userMap["name"] = user.username
+                    val database = FirebaseDatabase
+                        .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+                        .getReference("Users").child(uid)
+                    database.setValue(userMap)
+
+                    var arr = ArrayList<Preset>()
+                    arr.add(Preset("prova1","preset prova1"))
+                    arr.add(Preset("prova2","preset prova2"))
+                     val presdarabse=     FirebaseDatabase
+                         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+                         .getReference("Users").child(uid).child("Presets")
+
+                        presdarabse.setValue(arr).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             //   val intent = Intent(applicationContext, MainActivity::class.java)
                             //  startActivity(intent)
