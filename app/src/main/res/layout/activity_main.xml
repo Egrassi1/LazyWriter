@@ -12,37 +12,39 @@
         style="@style/app_ButtonStyle"
         android:layout_width="141dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="136dp"
+        android:layout_marginEnd="132dp"
         android:text="Login"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/InputPasswordLog"
-        app:layout_constraintVertical_bias="0.208" />
+        app:layout_constraintVertical_bias="0.289" />
 
     <Button
         android:id="@+id/btn_reg"
         style="@style/app_ButtonStyle"
         android:layout_width="141dp"
         android:layout_height="50dp"
-        android:layout_marginEnd="136dp"
+        android:layout_marginEnd="132dp"
         android:text="Registrati"
+        android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_login"
-        app:layout_constraintVertical_bias="0.18" />
+        app:layout_constraintVertical_bias="0.238" />
 
     <EditText
         android:id="@+id/InputPasswordLog"
         style="@style/app_editTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="72dp"
         android:ems="10"
         android:hint="password"
         android:inputType="textPassword"
         android:textColor="#CACA00"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.517"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/InputEmailLog" />
 
@@ -56,23 +58,23 @@
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.167" />
+        app:layout_constraintVertical_bias="0.086" />
 
     <EditText
         android:id="@+id/InputEmailLog"
         style="@style/app_editTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="96dp"
         android:ems="10"
         android:hint="email"
         android:inputType="textEmailAddress"
         android:textColor="#CACA00"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintHorizontal_bias="0.517"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 

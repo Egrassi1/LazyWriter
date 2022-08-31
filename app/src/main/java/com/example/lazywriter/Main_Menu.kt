@@ -2,7 +2,12 @@ package com.example.lazywriter
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
@@ -14,8 +19,31 @@ class Main_Menu : AppCompatActivity() {
         val extras = intent.extras
         val UID = extras?.get("UID")
 
+
         val recyclerview = findViewById<RecyclerView>(R.id.rcv)
         recyclerview.layoutManager = LinearLayoutManager(this)
+
+        val addBtn = findViewById<ImageButton>(R.id.AddButton)
+        val delBtn = findViewById<ImageButton>(R.id.DeleteButton)
+        val copBtn = findViewById<ImageButton>(R.id.CopyButton)
+        val whBtn = findViewById<ImageButton>(R.id.WhaButton)
+
+        var click = object : OnListClickInterface{
+            override fun OnClick(pos: Int) {
+                delBtn.isVisible= true
+                copBtn.isVisible= true
+                whBtn.isVisible= true
+
+            }
+        }
+
+        delBtn.isVisible= false
+        copBtn.isVisible= false
+        whBtn.isVisible= false
+
+
+
+
 
 
         lateinit var username : String
@@ -30,14 +58,7 @@ class Main_Menu : AppCompatActivity() {
                 val tag = findViewById<TextView>(R.id.welcome_tag)
                 username = post.text
                 tag.setText("Bentornato "+ username)
-                    /**post[0].text
 
-
-                for(i in 1.. post.size )
-                {
-                    data[i] = post[i]
-                }
-                    **/
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -59,7 +80,9 @@ class Main_Menu : AppCompatActivity() {
                 val post = dataSnapshot.getValue(object: GenericTypeIndicator<ArrayList<Preset>>(){}) as ArrayList<Preset>
                // val tag = findViewById<TextView>(R.id.welcome_tag)
                 data = post
-                val adapter = CustomAdapter(data)
+                
+                // getting the recyclerview by its id
+                val adapter = CustomAdapter(data,click)
                 recyclerview.adapter = adapter
 
             }
@@ -71,12 +94,14 @@ class Main_Menu : AppCompatActivity() {
         presetdatabase.addValueEventListener(presetListener)
 
 
-        // getting the recyclerview by its id
 
+
+
+
+       }
 
 
 
 
     }
 
-}

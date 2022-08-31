@@ -7,8 +7,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CustomAdapter(private val mList: List<Preset>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>()
+class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInterface ) : RecyclerView.Adapter<CustomAdapter.ViewHolder>()
 {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
@@ -25,7 +26,9 @@ class CustomAdapter(private val mList: List<Preset>) : RecyclerView.Adapter<Cust
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.title
         holder.textView2.text = ItemsViewModel.text
-
+        holder.itemView.setOnClickListener {
+            onclick.OnClick(position)
+        }
     }
 
     // return the number of the items in the list
@@ -33,10 +36,18 @@ class CustomAdapter(private val mList: List<Preset>) : RecyclerView.Adapter<Cust
         return mList.size
     }
 
+
+
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val imageView: ImageView = itemView.findViewById(R.id.Pic)
         val textView: TextView = itemView.findViewById(R.id.Name)
         val textView2: TextView = itemView.findViewById(R.id.textView3)
+
+
     }
+
+
+
+
 }
