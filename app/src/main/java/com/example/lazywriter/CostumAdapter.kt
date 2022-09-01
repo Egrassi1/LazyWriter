@@ -1,14 +1,18 @@
 package com.example.lazywriter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.collection.LLRBNode
 
 class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInterface ) : RecyclerView.Adapter<CustomAdapter.ViewHolder>()
 {
+
+    lateinit var lastsel: ViewHolder
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -27,7 +31,14 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
         holder.textView.text = ItemsViewModel.title
         holder.textView2.text = ItemsViewModel.text
         holder.itemView.setOnClickListener {
+            if(::lastsel.isInitialized)
+            {
+                lastsel.itemView.setBackgroundColor(0xFFFFFF)
+            }
+            holder.itemView.setBackgroundColor(0x6B3A3838)
+            lastsel = holder
             onclick.OnClick(position)
+
         }
     }
 
@@ -35,8 +46,6 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
     override fun getItemCount(): Int {
         return mList.size
     }
-
-
 
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {

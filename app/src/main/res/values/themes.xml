@@ -28,7 +28,8 @@
     <style name="app_ButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="android:background">@drawable/button_box</item>
         <item name="android:textColor">?attr/colorSecondary</item>
-        <item name="android:backgroundTint">#ffff</item>
+        <item name="android:backgroundTint">@color/white</item>
+        <item name = "android:textSize">18sp</item>
     </style>
 
 </resources>
