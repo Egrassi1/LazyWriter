@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -34,7 +36,14 @@ class addfragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_addfragment, container, false)
+        val view =  inflater.inflate(R.layout.fragment_addfragment, container, false)
+        val titolo = view.findViewById<TextView>(R.id.Title_text)
+        val testo = view.findViewById<TextView>(R.id.preset_text)
+        val btnAdd = view.findViewById<Button>(R.id.save_btn)
+        btnAdd.setOnClickListener {
+            (activity as Main_Menu).savePreset(titolo.text.toString(),testo.text.toString())
+        }
+        return view
     }
 
 }

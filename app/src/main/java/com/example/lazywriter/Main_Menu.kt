@@ -1,19 +1,14 @@
 package com.example.lazywriter
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.os.Bundle
-import android.view.MotionEvent
-import android.view.View
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentContainerView
-import androidx.fragment.app.FragmentManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
+
 
 class Main_Menu : AppCompatActivity() {
     lateinit var     addBtn : ImageButton
@@ -26,14 +21,15 @@ class Main_Menu : AppCompatActivity() {
     private val addfragment = addfragment()
     private var fragstate = true
     var data = ArrayList<Preset>()
-
+    var keyList = ArrayList<String>()
+    var selected = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
         val extras = intent.extras
         val UID = extras?.get("UID")
-        var data = ArrayList<Preset>()
+
 
         addBtn = findViewById<ImageButton>(R.id.AddButton)
         delBtn = findViewById<ImageButton>(R.id.DeleteButton)
@@ -46,6 +42,15 @@ class Main_Menu : AppCompatActivity() {
         whBtn.isVisible= false
 
 
+        copBtn.setOnClickListener {
+
+            val testo = data[selected].text
+            val clipboard =
+                applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("", testo)
+            clipboard.setPrimaryClip(clip)
+        }
+
 
         addBtn.setOnClickListener {
             if (fragstate) {
@@ -54,6 +59,9 @@ class Main_Menu : AppCompatActivity() {
                 transaction.commit()
                 fragstate= false
                 addBtn.setImageResource(R.drawable.back_baseline)
+                delBtn.isVisible= false
+                copBtn.isVisible= false
+                whBtn.isVisible= false
             }else {
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.replace(R.id.fgv, listfragment)
@@ -64,10 +72,28 @@ class Main_Menu : AppCompatActivity() {
             }
 
         }
+
+        delBtn.setOnClickListener {
+
+            data.clear()
+            adapter.notifyDataSetChanged()
+
+
+
+            dbHelper.delete(keyList[selected])
+
+        }
+
+
         dbHelper.retriveusername()
         dbHelper.retrivedata()
 
+
+
+
        }
+
+
 
 
  fun setClickList(): OnListClickInterface
@@ -77,6 +103,9 @@ class Main_Menu : AppCompatActivity() {
              delBtn.isVisible= true
              copBtn.isVisible= true
              whBtn.isVisible= true
+             selected = adapter.pos
+             val text = findViewById<TextView>(R.id.quantity_text)
+             text.setText(data.size.toString() + "/" + selected.toString())
          }
      }
      return click
@@ -88,8 +117,14 @@ class Main_Menu : AppCompatActivity() {
      tag.setText("Bentornato "+ username)
  }
 
-    fun notifyData(post: ArrayList<Preset>) {
+    fun notifyData(post: ArrayList<Preset>, keys : ArrayList<String>) {
+
         data= post
+        keyList = keys
+
+        val text = findViewById<TextView>(R.id.quantity_text)
+        text.setText(data.size.toString() + "/" + "20")
+
         adapter.notifyDataSetChanged()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fgv, listfragment)
@@ -101,6 +136,19 @@ class Main_Menu : AppCompatActivity() {
          val click = setClickList()
          adapter = CustomAdapter(data,click)
          return adapter
+    }
+
+    fun savePreset(titolo: String, testo: String) {
+
+        val pres = Preset(titolo,testo)
+        //data.clear()
+        adapter.notifyDataSetChanged()
+        addBtn.setImageResource(R.drawable.add_baseline)
+        delBtn.isVisible= false
+        copBtn.isVisible= false
+        whBtn.isVisible= false
+        fragstate = !fragstate
+        dbHelper.save(pres)
     }
 
 

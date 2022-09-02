@@ -13,6 +13,7 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
 {
 
     lateinit var lastsel: ViewHolder
+    var pos = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -37,6 +38,7 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
             }
             holder.itemView.setBackgroundColor(0x6B3A3838)
             lastsel = holder
+            pos =position
             onclick.OnClick(position)
 
         }

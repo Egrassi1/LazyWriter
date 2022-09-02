@@ -45,17 +45,10 @@ class listfragment() : Fragment() {
 
     fun setView(adapter: CustomAdapter)
     {
-        //val adapter = CustomAdapter(data,click)
         recyclerview.adapter = adapter
 
     }
 
-    /**
-    fun setDb(dbHelp : dbHelper)
-    {
-        DbHelp = dbHelp
 
-    }
-    **/
 
 }

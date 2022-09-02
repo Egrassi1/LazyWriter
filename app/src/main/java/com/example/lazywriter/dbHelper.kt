@@ -1,13 +1,13 @@
 package com.example.lazywriter
 
+import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
 class dbHelper(val menu: Main_Menu) {
 
 
-    val preList = ArrayList<Preset>()
-    val data = HashMap<String,Preset>()
+
 
 
     val UID = FirebaseAuth.getInstance().currentUser!!.uid
@@ -36,6 +36,9 @@ fun retriveusername(){
 
 fun retrivedata ()
 {
+    val keyList = ArrayList<String>()
+    val preList = ArrayList<Preset>()
+    val data = HashMap<String,Preset>()
 
     val presetdatabase = FirebaseDatabase
         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -43,28 +46,32 @@ fun retrivedata ()
 
     val presetListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
-            // Get Post object and use the values to update the UI
-           // val post = dataSnapshot.getValue(Preset::class.java) as Preset
+            preList.clear()
+            keyList.clear()
+            try {
+                val post = dataSnapshot.getValue(object :
+                    GenericTypeIndicator<HashMap<String, Preset>>() {}) as HashMap<String, Preset>
+                for (childKey in post.keys) {
+
+                    post.get(childKey)?.let { preList.add(it) }
+                    keyList.add(childKey)
+
+                }
 
 
-            val post = dataSnapshot.getValue(object : GenericTypeIndicator<HashMap<String,Preset>>(){}) as HashMap<String,Preset>
 
-            for (childKey in post.keys) {
-                //childKey is your "-LQka.. and so on"
-                //Your current object holds all the variables in your picture.
-                post.get(childKey)?.let { preList.add(it) }
+            }catch(e: Exception)
+            {
 
-                //You can access each variable like so: String variableName = (String) currentLubnaObject.get("INSERT_VARIABLE_HERE"); //data, description, taskid, time, title
             }
-            //preList.add(post)
-
-             menu.notifyData(preList)
-            //menu.MenunotifyUpdate(preList[0].text)
+            menu.notifyData(preList, keyList)
 
 
         }
 
         override fun onCancelled(error: DatabaseError) {
+
+
 
         }
     }
@@ -74,4 +81,22 @@ fun retrivedata ()
 
 }
 
+    fun save(pres: Preset) {
+
+        val presdarabse=     FirebaseDatabase
+            .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+            .getReference("Users").child(UID).child("Presets").push()
+        presdarabse.setValue(pres)
+
+    }
+
+    fun delete(s: String) {
+        val presdarabse=     FirebaseDatabase
+            .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+            .getReference("Users").child(UID).child("Presets").child(s)
+        presdarabse.removeValue()
+    }
+
+
 }
+
