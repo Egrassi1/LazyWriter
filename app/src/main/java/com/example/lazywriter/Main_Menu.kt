@@ -8,7 +8,9 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.*
@@ -18,9 +20,12 @@ class Main_Menu : AppCompatActivity() {
     lateinit var   delBtn : ImageButton
     lateinit var  copBtn : ImageButton
     lateinit var whBtn :   ImageButton
-    private val listfragment = listfragment()
+    lateinit var adapter: CustomAdapter
+    val dbHelper = dbHelper(this)
+    private var listfragment  = listfragment()
     private val addfragment = addfragment()
     private var fragstate = true
+    var data = ArrayList<Preset>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,16 +33,19 @@ class Main_Menu : AppCompatActivity() {
         setContentView(R.layout.activity_main_menu)
         val extras = intent.extras
         val UID = extras?.get("UID")
+        var data = ArrayList<Preset>()
 
-       addBtn = findViewById<ImageButton>(R.id.AddButton)
-          delBtn = findViewById<ImageButton>(R.id.DeleteButton)
-       copBtn = findViewById<ImageButton>(R.id.CopyButton)
-         whBtn = findViewById<ImageButton>(R.id.WhaButton)
+        addBtn = findViewById<ImageButton>(R.id.AddButton)
+        delBtn = findViewById<ImageButton>(R.id.DeleteButton)
+        copBtn = findViewById<ImageButton>(R.id.CopyButton)
+        whBtn = findViewById<ImageButton>(R.id.WhaButton)
 
 
         delBtn.isVisible= false
         copBtn.isVisible= false
-         whBtn.isVisible= false
+        whBtn.isVisible= false
+
+
 
         addBtn.setOnClickListener {
             if (fragstate) {
@@ -56,36 +64,12 @@ class Main_Menu : AppCompatActivity() {
             }
 
         }
-
-
-
-        //val recyclerview = findViewById<RecyclerView>(R.id.rcvp)
-        //recyclerview.layoutManager = LinearLayoutManager(this)
-
-        lateinit var username : String
-        var data = ArrayList<Preset>()
-        val database = FirebaseDatabase
-            .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
-            .getReference("Users").child(UID.toString())
-        val postListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Post object and use the values to update the UI
-                val post = dataSnapshot.getValue(Preset::class.java) as Preset
-                val tag = findViewById<TextView>(R.id.welcome_tag)
-                username = post.text
-                tag.setText("Bentornato "+ username)
-
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-
-            }
-        }
-     database.addValueEventListener(postListener)
-
-
+        dbHelper.retriveusername()
+        dbHelper.retrivedata()
 
        }
+
+
  fun setClickList(): OnListClickInterface
  {
      var click = object : OnListClickInterface{
@@ -98,8 +82,27 @@ class Main_Menu : AppCompatActivity() {
      return click
  }
 
+ fun MenunotifyUpdate(username : String)
+ {
+     val tag = findViewById<TextView>(R.id.welcome_tag)
+     tag.setText("Bentornato "+ username)
+ }
 
-
+    fun notifyData(post: ArrayList<Preset>) {
+        data= post
+        adapter.notifyDataSetChanged()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fgv, listfragment)
+        transaction.commit()
 
     }
+
+    fun retriveAdapter(): CustomAdapter {
+         val click = setClickList()
+         adapter = CustomAdapter(data,click)
+         return adapter
+    }
+
+
+}
 

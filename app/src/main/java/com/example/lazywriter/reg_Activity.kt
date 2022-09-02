@@ -67,12 +67,18 @@ class reg_Activity : AppCompatActivity() {
                     var arr = ArrayList<Preset>()
                     arr.add(Preset("prova1","preset prova1"))
                     arr.add(Preset("prova2","preset prova2"))
-                     val presdarabse=     FirebaseDatabase
+                    val preset1 = Preset("prova1","testo prova1")
+                    val preset2 = Preset("prova2","testo prova2")
+                    val presdarabse=     FirebaseDatabase
                          .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
-                         .getReference("Users").child(uid).child("Presets")
+                       .getReference("Users").child(uid).child("Presets").push()
+                    val presdarabse2=     FirebaseDatabase
+                        .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+                        .getReference("Users").child(uid).child("Presets").push()
 
-                        presdarabse.setValue(arr).addOnCompleteListener { task ->
+                        presdarabse.setValue(preset1).addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            presdarabse2.setValue(preset2)
                             //   val intent = Intent(applicationContext, MainActivity::class.java)
                             //  startActivity(intent)
                             finish()
