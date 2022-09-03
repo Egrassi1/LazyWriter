@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,7 +39,10 @@ class listfragment() : Fragment() {
             recyclerview.adapter = adapter
             //DbHelp.retrivedata()
        // }
-
+        val check = view.findViewById<CheckBox>(R.id.posbox)
+        check.setOnClickListener{
+            (activity as Main_Menu).positionattachment(check.isChecked)
+        }
         return view
 
     }
