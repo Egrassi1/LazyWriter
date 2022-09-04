@@ -10,13 +10,20 @@ import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var auth: FirebaseAuth
+
+    lateinit var dbHelper: dbHelper
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        auth = FirebaseAuth.getInstance()
+         dbHelper = dbHelper()
+        if(dbHelper.isLogged())
+        {
+            val intent = Intent(this, Main_Menu::class.java)
+            startActivity(intent)
+            finish()
+        }
         val btn_reg = findViewById<Button>(R.id.btn_reg)
         btn_reg.setOnClickListener {
             val i = Intent(this,reg_Activity::class.java)
@@ -44,28 +51,27 @@ class MainActivity : AppCompatActivity() {
             passwordEditText.error = "Enter password"
             return
         }
-        loginUser(email, password)
-    }
-    private fun loginUser(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val UID = auth.currentUser?.uid
-                    val intent = Intent(this, Main_Menu::class.java)
-                    intent.putExtra("UID",UID)
-                    startActivity(intent)
-                    finish()
-                } else {
-                    val builder = AlertDialog.Builder(this)
-                    with(builder)
-                    {
-                        setTitle("Authentication failed")
-                        setMessage(task.exception?.message)
-                        setPositiveButton("OK", null)
-                        show()
-                    }
+        val result =dbHelper.loginUser(email, password)
+        result.addOnCompleteListener(this)
+        {
+            if (result.isSuccessful) {
+                //val UID = auth.currentUser?.uid
+                val intent = Intent(this, Main_Menu::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                val builder = AlertDialog.Builder(this)
+                with(builder)
+                {
+                    setTitle("Authentication failed")
+                    setMessage(result.exception?.message)
+                    setPositiveButton("OK", null)
+                    show()
                 }
             }
+        }
+
     }
 
-}
+    }
+

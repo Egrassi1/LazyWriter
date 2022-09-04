@@ -1,22 +1,76 @@
 package com.example.lazywriter
 
+import android.content.Intent
+import android.os.Parcelable
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import com.google.android.gms.tasks.Task
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.database.*
-
-class dbHelper(val menu: Main_Menu) {
-
+import java.io.Serializable
 
 
 
-
-    val UID = FirebaseAuth.getInstance().currentUser!!.uid
+class dbHelper()
+{
 
 
 
 
+    lateinit var menu : Main_Menu
+    lateinit var UID : String
+    private lateinit var auth: FirebaseAuth
+
+    init{
+        auth = FirebaseAuth.getInstance()
+
+    }
+
+    fun createUser(email: String, password: String): Task<AuthResult> {
+
+           val result = auth.createUserWithEmailAndPassword(email, password)
+
+
+
+        return result
+
+        }
+
+    fun initUser(userName: String) {
+        val currenyUser = auth.currentUser
+        val uid = currenyUser!!.uid
+        //val userMap = HashMap<String, String>()
+        val userMap = Preset("name", userName)
+        //userMap["name"] = user.username
+        val database = FirebaseDatabase
+            .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+            .getReference("Users").child(uid)
+        database.setValue(userMap)
+        val preset1 = Preset("prova", "testo di prova")
+        val presdarabse = FirebaseDatabase
+            .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+            .getReference("Users").child(uid).child("Presets").push()
+
+
+        presdarabse.setValue(preset1)
+
+
+}
+
+     fun loginUser(email: String, password: String): Task<AuthResult> {
+
+         val res = auth.signInWithEmailAndPassword(email, password)
+
+            return  res
+             //return "OK"
+
+            }
 
 fun retriveusername(){
+    UID = FirebaseAuth.getInstance().currentUser!!.uid
     val database = FirebaseDatabase
         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
         .getReference("Users").child(UID)
@@ -36,6 +90,7 @@ fun retriveusername(){
 
 fun retrivedata ()
 {
+
     val keyList = ArrayList<String>()
     val preList = ArrayList<Preset>()
     val data = HashMap<String,Preset>()
@@ -95,6 +150,24 @@ fun retrivedata ()
             .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("Users").child(UID).child("Presets").child(s)
         presdarabse.removeValue()
+    }
+
+    fun change(pres: Preset, chiave: String) {
+        val presdarabse=     FirebaseDatabase
+            .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
+            .getReference("Users").child(UID).child("Presets").child(chiave)
+        presdarabse.setValue(pres)
+
+    }
+
+    fun isLogged(): Boolean {
+        val currentUser = auth.currentUser
+        return currentUser != null
+
+    }
+
+    fun singout() {
+        auth.signOut()
     }
 
 

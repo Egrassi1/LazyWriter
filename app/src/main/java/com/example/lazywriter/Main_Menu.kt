@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -23,8 +24,12 @@ class Main_Menu : AppCompatActivity()  {
     lateinit var   delBtn : ImageButton
     lateinit var  copBtn : ImageButton
     lateinit var whBtn :   ImageButton
+    lateinit var editBtn: ImageButton
+    lateinit var outBtn : Button
     lateinit var adapter: CustomAdapter
-    val dbHelper = dbHelper(this)
+
+    val  dbHelper = dbHelper()
+
     private var listfragment  = listfragment()
     private val addfragment = addfragment()
     private var fragstate = true
@@ -36,6 +41,7 @@ class Main_Menu : AppCompatActivity()  {
     lateinit var locationRequest: LocationRequest
     lateinit var locationCallback: LocationCallback
     var locationup = false
+    var edit = false
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
    //private var locationRequest: LocationRequest? = null
@@ -53,23 +59,31 @@ class Main_Menu : AppCompatActivity()  {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
-        val extras = intent.extras
-        val UID = extras?.get("UID")
 
+        dbHelper.menu = this
 
-
+        outBtn = findViewById<Button>(R.id.outBtn)
         addBtn = findViewById<ImageButton>(R.id.AddButton)
+        editBtn = findViewById<ImageButton>(R.id.EditButton)
         delBtn = findViewById<ImageButton>(R.id.DeleteButton)
         copBtn = findViewById<ImageButton>(R.id.CopyButton)
         whBtn = findViewById<ImageButton>(R.id.WhaButton)
 
 
+
         delBtn.isVisible= false
         copBtn.isVisible= false
         whBtn.isVisible= false
+        editBtn.isVisible= false
 
 
-
+        outBtn.setOnClickListener()
+        {
+            dbHelper.singout()
+            val i = Intent(this,MainActivity::class.java)
+            startActivity(i)
+            finish()
+        }
 
         copBtn.setOnClickListener {
 
@@ -94,6 +108,7 @@ class Main_Menu : AppCompatActivity()  {
                 delBtn.isVisible= false
                 copBtn.isVisible= false
                 whBtn.isVisible= false
+                editBtn.isVisible= false
             }else {
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.replace(R.id.fgv, listfragment)
@@ -102,6 +117,18 @@ class Main_Menu : AppCompatActivity()  {
                 addBtn.setImageResource(R.drawable.add_baseline)
 
             }
+
+        }
+
+        editBtn.setOnClickListener {
+            edit = true
+            val transaction = supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.fgv, addfragment)
+            transaction.commit()
+            fragstate= false
+            addBtn.setImageResource(R.drawable.back_baseline)
+
+
 
         }
 
@@ -143,6 +170,7 @@ class Main_Menu : AppCompatActivity()  {
              delBtn.isVisible= true
              copBtn.isVisible= true
              whBtn.isVisible= true
+             editBtn.isVisible= true
              selected = adapter.pos
              val text = findViewById<TextView>(R.id.quantity_text)
              text.setText(data.size.toString() + "/" + selected.toString())
@@ -265,7 +293,20 @@ class Main_Menu : AppCompatActivity()  {
 
             }
 
+    fun ChangePreset(titolo: String, testo: String, chiave: String) {
+
+        adapter.notifyDataSetChanged()
+        addBtn.setImageResource(R.drawable.add_baseline)
+        delBtn.isVisible= false
+        copBtn.isVisible= false
+        whBtn.isVisible= false
+        fragstate = !fragstate
+        val pres = Preset(titolo,testo)
+        dbHelper.change(pres,chiave)
+
     }
+
+}
 
 
 

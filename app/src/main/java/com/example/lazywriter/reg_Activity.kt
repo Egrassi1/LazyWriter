@@ -4,20 +4,17 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Toast
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import androidx.appcompat.app.AlertDialog
 
 class reg_Activity : AppCompatActivity() {
-    private lateinit var auth: FirebaseAuth
-
+    //private lateinit var auth: FirebaseAuth
+    val dbHelper = dbHelper()
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reg2)
-        auth = FirebaseAuth.getInstance()
         val btn_reg_sub = findViewById<Button>(R.id.btn_reg_sub)
         btn_reg_sub.setOnClickListener {
             onSignUp()
@@ -44,54 +41,29 @@ class reg_Activity : AppCompatActivity() {
             passwordEditText.error = "Enter password"
             return
         }
-        val u = User(userName,email,password)
-        createUser(u)
 
-    }
-
-
-    private fun createUser(user:User) {
-        auth.createUserWithEmailAndPassword(user.email, user.password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    val currenyUser = auth.currentUser
-                    val uid = currenyUser!!.uid
-                    //val userMap = HashMap<String, String>()
-                    val userMap = Preset("name", user.username)
-                    //userMap["name"] = user.username
-                    val database = FirebaseDatabase
-                        .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
-                        .getReference("Users").child(uid)
-                    database.setValue(userMap)
-
-                    var arr = ArrayList<Preset>()
-                    arr.add(Preset("prova1","preset prova1"))
-                    arr.add(Preset("prova2","preset prova2"))
-                    val preset1 = Preset("prova1","testo prova1")
-                    val preset2 = Preset("prova2","testo prova2")
-                    val presdarabse=     FirebaseDatabase
-                         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
-                       .getReference("Users").child(uid).child("Presets").push()
-                    val presdarabse2=     FirebaseDatabase
-                        .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
-                        .getReference("Users").child(uid).child("Presets").push()
-
-                        presdarabse.setValue(preset1).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            presdarabse2.setValue(preset2)
-                            //   val intent = Intent(applicationContext, MainActivity::class.java)
-                            //  startActivity(intent)
-                            finish()
-                        }
-                    }
-                } else {
-                    Toast.makeText(
-                        baseContext, task.exception.toString(),
-                        Toast.LENGTH_SHORT
-                    ).show()
+       val result =  dbHelper.createUser(email,password)
+        result.addOnCompleteListener(this){
+            if (result.isSuccessful) {
+                dbHelper.initUser(userName)
+                finish()
+            }   else {
+                val builder = AlertDialog.Builder(this)
+                with(builder)
+                {
+                    setTitle("Authentication failed")
+                    setMessage(result.exception?.message)
+                    setPositiveButton("OK", null)
+                    show()
                 }
-            }
+        }
 
     }
+
+
     }
+
+
+    }
+
 
