@@ -1,6 +1,7 @@
 package com.example.lazywriter
 
 import android.Manifest
+import android.app.ProgressDialog
 import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import com.google.android.gms.location.*
-import java.lang.Exception
 
 
 class Main_Menu : AppCompatActivity()  {
@@ -28,10 +28,12 @@ class Main_Menu : AppCompatActivity()  {
     lateinit var outBtn : Button
     lateinit var adapter: CustomAdapter
 
+    lateinit var dialog: ProgressDialog
+
     val  dbHelper = dbHelper()
 
     private var listfragment  = listfragment()
-    private val addfragment = addfragment()
+    private var addfragment = addfragment()
     private var fragstate = true
 
     private var location: Location? = null
@@ -41,7 +43,7 @@ class Main_Menu : AppCompatActivity()  {
     lateinit var locationRequest: LocationRequest
     lateinit var locationCallback: LocationCallback
     var locationup = false
-    var edit = false
+
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
    //private var locationRequest: LocationRequest? = null
@@ -57,10 +59,12 @@ class Main_Menu : AppCompatActivity()  {
     var selected = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        dbHelper.menu = this
+        dbHelper.retriveusername()
+        dbHelper.retrivedata()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
 
-        dbHelper.menu = this
 
         outBtn = findViewById<Button>(R.id.outBtn)
         addBtn = findViewById<ImageButton>(R.id.AddButton)
@@ -69,13 +73,10 @@ class Main_Menu : AppCompatActivity()  {
         copBtn = findViewById<ImageButton>(R.id.CopyButton)
         whBtn = findViewById<ImageButton>(R.id.WhaButton)
 
-
-
         delBtn.isVisible= false
         copBtn.isVisible= false
         whBtn.isVisible= false
         editBtn.isVisible= false
-
 
         outBtn.setOnClickListener()
         {
@@ -86,23 +87,25 @@ class Main_Menu : AppCompatActivity()  {
         }
 
         copBtn.setOnClickListener {
-
-
-
-            var testo = data[selected].text
+            var testo : String
+            if(!addfragment.edit) {
+                 testo = data[selected].text
+            }else{  testo = addfragment.testo.text.toString()}
             if(locationup)  testo = testo + "/n    "+ "latitudine: "+ latitude.toString()+ "; longitudione: "+ longitude.toString()
-            val clipboard =
-                applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+            val clipboard = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("", testo)
             clipboard.setPrimaryClip(clip)
         }
 
-
         addBtn.setOnClickListener {
             if (fragstate) {
+                addfragment = addfragment()
+                addfragment.edit= false
+                addfragment.setview()
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.replace(R.id.fgv, addfragment)
                 transaction.commit()
+                //addfragment.setview(false)
                 fragstate= false
                 addBtn.setImageResource(R.drawable.back_baseline)
                 delBtn.isVisible= false
@@ -113,6 +116,7 @@ class Main_Menu : AppCompatActivity()  {
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.replace(R.id.fgv, listfragment)
                 transaction.commit()
+                addfragment.edit = false
                 fragstate= true
                 addBtn.setImageResource(R.drawable.add_baseline)
 
@@ -121,39 +125,42 @@ class Main_Menu : AppCompatActivity()  {
         }
 
         editBtn.setOnClickListener {
-            edit = true
+            editBtn.isVisible= false
+            addfragment = addfragment()
+            addfragment.edit= true
+            addfragment.setview()
             val transaction = supportFragmentManager.beginTransaction()
             transaction.replace(R.id.fgv, addfragment)
             transaction.commit()
             fragstate= false
             addBtn.setImageResource(R.drawable.back_baseline)
-
-
-
         }
 
         delBtn.setOnClickListener {
-
-            data.clear()
-            adapter.notifyDataSetChanged()
-
-
-
+            listfragment = listfragment()
             dbHelper.delete(keyList[selected])
-
+            adapter.notifyDataSetChanged()
+            if(!fragstate)
+            {
+                addfragment.edit = false
+                fragstate= true
+                addBtn.setImageResource(R.drawable.add_baseline)
+            }
+            delBtn.isVisible= false
+            copBtn.isVisible= false
+            whBtn.isVisible= false
+            editBtn.isVisible= false
         }
 
         whBtn.setOnClickListener {
-            var testo = data[selected].text
+            var testo : String
+            if(!addfragment.edit) {
+                testo = data[selected].text
+            }else{  testo = addfragment.testo.text.toString()}
             if(locationup)  testo = testo + "/n    "+ "latitudine: "+ latitude.toString()+ "; longitudione: "+ longitude.toString()
             sendMessage(testo)
 
         }
-
-
-        dbHelper.retriveusername()
-        dbHelper.retrivedata()
-
 
         locationRequest = buildLocationRequest()
          locationCallback =  buildLocationCallBack()
@@ -192,11 +199,11 @@ class Main_Menu : AppCompatActivity()  {
 
         val text = findViewById<TextView>(R.id.quantity_text)
         text.setText(data.size.toString() + "/" + "20")
-
-        adapter.notifyDataSetChanged()
         val transaction = supportFragmentManager.beginTransaction()
         transaction.replace(R.id.fgv, listfragment)
         transaction.commit()
+        adapter.notifyDataSetChanged()
+
 
     }
 
@@ -209,14 +216,17 @@ class Main_Menu : AppCompatActivity()  {
     fun savePreset(titolo: String, testo: String) {
 
         val pres = Preset(titolo,testo)
-        //data.clear()
         adapter.notifyDataSetChanged()
         addBtn.setImageResource(R.drawable.add_baseline)
-        delBtn.isVisible= false
-        copBtn.isVisible= false
-        whBtn.isVisible= false
+       // delBtn.isVisible= false
+       // copBtn.isVisible= false
+       // whBtn.isVisible= false
         fragstate = !fragstate
         dbHelper.save(pres)
+        //addfragment = addfragment()
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fgv, listfragment)
+        transaction.commit()
     }
 
 
@@ -235,7 +245,9 @@ class Main_Menu : AppCompatActivity()  {
                 for (location in locationResult.locations) {
                      latitude = location.latitude
                      longitude = location.longitude
+
                 }
+
             }
         }
         return locationCallback
@@ -256,11 +268,25 @@ class Main_Menu : AppCompatActivity()  {
             ) {
 
             }
-            fusedLocationClient?.requestLocationUpdates(
+            startprocd("Recupero della posizione")
+           val result =  fusedLocationClient?.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
                 null
             )
+            result?.addOnCompleteListener{
+                if (result.isSuccessful)
+                {
+                    stoprpcd()
+
+                }else{
+                    stoprpcd()
+
+                }
+            }
+
+
+
         } else{
             fusedLocationClient?.removeLocationUpdates(locationCallback)
         }
@@ -294,17 +320,34 @@ class Main_Menu : AppCompatActivity()  {
             }
 
     fun ChangePreset(titolo: String, testo: String, chiave: String) {
-
         adapter.notifyDataSetChanged()
         addBtn.setImageResource(R.drawable.add_baseline)
         delBtn.isVisible= false
         copBtn.isVisible= false
         whBtn.isVisible= false
         fragstate = !fragstate
+        //addfragment = addfragment()
         val pres = Preset(titolo,testo)
         dbHelper.change(pres,chiave)
 
     }
+
+    fun startprocd(message: String )
+    {
+        dialog = ProgressDialog(this)
+        dialog.setMessage(message)
+        dialog.setCancelable(false)
+        dialog.setInverseBackgroundForced(false)
+        dialog.show()
+    }
+    fun stoprpcd()
+    {
+        dialog.hide()
+    }
+
+
+
+
 
 }
 

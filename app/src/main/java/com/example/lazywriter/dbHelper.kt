@@ -70,6 +70,8 @@ class dbHelper()
             }
 
 fun retriveusername(){
+
+    menu.startprocd("Caricamento informazioni")
     UID = FirebaseAuth.getInstance().currentUser!!.uid
     val database = FirebaseDatabase
         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
@@ -78,6 +80,7 @@ fun retriveusername(){
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             // Get Post object and use the values to update the UI
             val post = dataSnapshot.getValue(Preset::class.java) as Preset
+            menu.stoprpcd()
             menu.MenunotifyUpdate(post.text)
         }
 
@@ -146,6 +149,7 @@ fun retrivedata ()
     }
 
     fun delete(s: String) {
+
         val presdarabse=     FirebaseDatabase
             .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("Users").child(UID).child("Presets").child(s)

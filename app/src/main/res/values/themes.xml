@@ -22,14 +22,23 @@
         <item name="android:paddingRight">16dp</item>
         <item name="android:paddingBottom">8dp</item>
         <item name="android:drawablePadding">8dp</item>
-        <item name ="android:textColorHint">?attr/colorSecondary</item>
+        <item name="android:textColorHint">?attr/colorSecondary</item>
     </style>
 
     <style name="app_ButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="android:background">@drawable/button_box</item>
         <item name="android:textColor">?attr/colorSecondary</item>
         <item name="android:backgroundTint">@color/white</item>
-        <item name = "android:textSize">18sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
+
+    <style name="Theme.LazyWriter.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.LazyWriter.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.LazyWriter.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
 </resources>

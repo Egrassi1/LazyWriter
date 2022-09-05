@@ -16,7 +16,7 @@ class listfragment() : Fragment() {
    // lateinit var DbHelp : dbHelper
     lateinit var recyclerview : RecyclerView
     lateinit var adapter: CustomAdapter
-
+    lateinit var check : CheckBox
 
 
 
@@ -39,7 +39,7 @@ class listfragment() : Fragment() {
             recyclerview.adapter = adapter
             //DbHelp.retrivedata()
        // }
-        val check = view.findViewById<CheckBox>(R.id.posbox)
+         check = view.findViewById<CheckBox>(R.id.posbox)
         check.setOnClickListener{
             (activity as Main_Menu).positionattachment(check.isChecked)
         }

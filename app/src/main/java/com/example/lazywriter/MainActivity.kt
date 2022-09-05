@@ -1,36 +1,33 @@
 package com.example.lazywriter
 
+import android.app.ProgressDialog
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
-import com.google.firebase.auth.FirebaseAuth
+import androidx.appcompat.app.AppCompatActivity
+
 
 class MainActivity : AppCompatActivity() {
 
-
+    lateinit var btn_login : Button
+    lateinit var btn_reg : Button
     lateinit var dbHelper: dbHelper
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-         dbHelper = dbHelper()
-        if(dbHelper.isLogged())
-        {
-            val intent = Intent(this, Main_Menu::class.java)
-            startActivity(intent)
-            finish()
-        }
-        val btn_reg = findViewById<Button>(R.id.btn_reg)
+        dbHelper = dbHelper()
+        btn_login = findViewById<Button>(R.id.btn_login)
+         btn_reg = findViewById<Button>(R.id.btn_reg)
         btn_reg.setOnClickListener {
             val i = Intent(this,reg_Activity::class.java)
             this.startActivity(i)
         }
 
-        val btn_login = findViewById<Button>(R.id.btn_login)
+
         btn_login.setOnClickListener {
 
          onLoginClick()
@@ -39,6 +36,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onLoginClick() {
+        btn_login.isEnabled = false
+        btn_reg.isEnabled = false
+
         val emailEditText = findViewById<EditText>(R.id.InputEmailLog)
         val passwordEditText = findViewById<EditText>(R.id.InputPasswordLog)
         val email = emailEditText.text.toString().trim()
@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
                 //val UID = auth.currentUser?.uid
                 val intent = Intent(this, Main_Menu::class.java)
                 startActivity(intent)
+
                 finish()
             } else {
                 val builder = AlertDialog.Builder(this)
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity() {
                     setTitle("Authentication failed")
                     setMessage(result.exception?.message)
                     setPositiveButton("OK", null)
+
                     show()
                 }
             }
