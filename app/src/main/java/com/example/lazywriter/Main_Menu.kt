@@ -2,13 +2,11 @@ package com.example.lazywriter
 
 import android.Manifest
 import android.app.ProgressDialog
-import android.content.ActivityNotFoundException
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.IBinder
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -27,6 +25,7 @@ class Main_Menu : AppCompatActivity()  {
     lateinit var editBtn: ImageButton
     lateinit var outBtn : Button
     lateinit var adapter: CustomAdapter
+    lateinit var mService : LocationService
 
     lateinit var dialog: ProgressDialog
 
@@ -37,22 +36,18 @@ class Main_Menu : AppCompatActivity()  {
     private var fragstate = true
 
     private var location: Location? = null
-    val PLAY_SERVICES_RESOLUTION_REQUEST = 9000
-    val UPDATE_INTERVAL: Long = 5000
-    val FASTEST_INTERVAL: Long = 5000
-    lateinit var locationRequest: LocationRequest
-    lateinit var locationCallback: LocationCallback
+
+
+
+    val servcConn = object : ServiceConnection {
+        override fun onServiceDisconnected(compName: ComponentName?) { }
+        override fun onServiceConnected(compName: ComponentName?, binder: IBinder?) {
+            mService = (binder as MyBinder).getService()
+        }
+        override fun onBindingDied(compName: ComponentName) {}
+    }
+
     var locationup = false
-
-
-    private var fusedLocationClient: FusedLocationProviderClient? = null
-   //private var locationRequest: LocationRequest? = null
-    //private var locationCallback: LocationCallback? = null
-
-    var latitude = 0.0
-    var longitude = 0.0
-
-
 
     var data = ArrayList<Preset>()
     var keyList = ArrayList<String>()
@@ -91,7 +86,7 @@ class Main_Menu : AppCompatActivity()  {
             if(!addfragment.edit) {
                  testo = data[selected].text
             }else{  testo = addfragment.testo.text.toString()}
-            if(locationup)  testo = testo + "/n    "+ "latitudine: "+ latitude.toString()+ "; longitudione: "+ longitude.toString()
+            if(locationup)  testo = testo + "\n    "+ "latitudine: "+  mService.getLat().toString()+ "; longitudione: "+ mService.getLong().toString()
             val clipboard = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("", testo)
             clipboard.setPrimaryClip(clip)
@@ -137,6 +132,7 @@ class Main_Menu : AppCompatActivity()  {
         }
 
         delBtn.setOnClickListener {
+            locationup = false
             listfragment = listfragment()
             dbHelper.delete(keyList[selected])
             adapter.notifyDataSetChanged()
@@ -157,14 +153,15 @@ class Main_Menu : AppCompatActivity()  {
             if(!addfragment.edit) {
                 testo = data[selected].text
             }else{  testo = addfragment.testo.text.toString()}
-            if(locationup)  testo = testo + "/n    "+ "latitudine: "+ latitude.toString()+ "; longitudione: "+ longitude.toString()
+            if(locationup)   testo = testo + "\n    "+ "latitudine: "+  mService.getLat().toString()+ "; longitudione: "+ mService.getLong().toString()
             sendMessage(testo)
 
         }
 
-        locationRequest = buildLocationRequest()
+/**        locationRequest = buildLocationRequest()
          locationCallback =  buildLocationCallBack()
         LocationServices.getFusedLocationProviderClient(this).also { fusedLocationClient = it }
+**/
 
 
        }
@@ -229,7 +226,7 @@ class Main_Menu : AppCompatActivity()  {
         transaction.commit()
     }
 
-
+/**
     private fun buildLocationRequest() : LocationRequest{
        val locationRequest = LocationRequest()
         locationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
@@ -252,43 +249,22 @@ class Main_Menu : AppCompatActivity()  {
         }
         return locationCallback
     }
-
+**/
     fun positionattachment(checked: Boolean) {
 
         locationup = !locationup
         if (checked)
         {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
 
+            val intentBg = Intent(this, LocationService::class.java)
+            bindService(intentBg, servcConn, BIND_AUTO_CREATE)
+            startService(intentBg)
             }
-            startprocd("Recupero della posizione")
-           val result =  fusedLocationClient?.requestLocationUpdates(
-                locationRequest,
-                locationCallback,
-                null
-            )
-            result?.addOnCompleteListener{
-                if (result.isSuccessful)
-                {
-                    stoprpcd()
+        else{
+        val intentBg = Intent(this, LocationService::class.java)
+            unbindService(servcConn)
+        stopService(intentBg)
 
-                }else{
-                    stoprpcd()
-
-                }
-            }
-
-
-
-        } else{
-            fusedLocationClient?.removeLocationUpdates(locationCallback)
         }
 
     }
