@@ -36,12 +36,13 @@
         </activity>
         <activity
             android:name=".Main_Menu"
+
             android:exported="false" />
         <activity
             android:name=".reg_Activity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".login_activity"
             android:exported="true"></activity>
     </application>
 

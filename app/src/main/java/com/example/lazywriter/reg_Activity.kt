@@ -1,5 +1,7 @@
 package com.example.lazywriter
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -46,6 +48,10 @@ class reg_Activity : AppCompatActivity() {
         result.addOnCompleteListener(this){
             if (result.isSuccessful) {
                 dbHelper.initUser(userName)
+                val resultIntent = Intent()
+                resultIntent.putExtra("email", email)
+                resultIntent.putExtra("password", password)
+                setResult(Activity.RESULT_OK, resultIntent)
                 finish()
             }   else {
                 val builder = AlertDialog.Builder(this)

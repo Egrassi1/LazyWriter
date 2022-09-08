@@ -1,9 +1,7 @@
 package com.example.lazywriter
 
-import android.Manifest
 import android.app.ProgressDialog
 import android.content.*
-import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
@@ -11,10 +9,10 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
-import com.google.android.gms.location.*
+import androidx.fragment.app.Fragment
 
 
 class Main_Menu : AppCompatActivity()  {
@@ -26,10 +24,11 @@ class Main_Menu : AppCompatActivity()  {
     lateinit var outBtn : Button
     lateinit var adapter: CustomAdapter
     lateinit var mService : LocationService
+   var frgm =  supportFragmentManager
 
     lateinit var dialog: ProgressDialog
 
-    val  dbHelper = dbHelper()
+   lateinit var  dbHelper : dbHelper
 
     private var listfragment  = listfragment()
     private var addfragment = addfragment()
@@ -54,12 +53,10 @@ class Main_Menu : AppCompatActivity()  {
     var selected = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        dbHelper.menu = this
-        dbHelper.retriveusername()
-        dbHelper.retrivedata()
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_menu)
-
+        dbHelper= dbHelper()
 
         outBtn = findViewById<Button>(R.id.outBtn)
         addBtn = findViewById<ImageButton>(R.id.AddButton)
@@ -73,10 +70,13 @@ class Main_Menu : AppCompatActivity()  {
         whBtn.isVisible= false
         editBtn.isVisible= false
 
+
+
+
         outBtn.setOnClickListener()
         {
             dbHelper.singout()
-            val i = Intent(this,MainActivity::class.java)
+            val i = Intent(this,login_activity::class.java)
             startActivity(i)
             finish()
         }
@@ -97,10 +97,7 @@ class Main_Menu : AppCompatActivity()  {
                 addfragment = addfragment()
                 addfragment.edit= false
                 addfragment.setview()
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fgv, addfragment)
-                transaction.commit()
-                //addfragment.setview(false)
+               transaction(addfragment)
                 fragstate= false
                 addBtn.setImageResource(R.drawable.back_baseline)
                 delBtn.isVisible= false
@@ -108,9 +105,7 @@ class Main_Menu : AppCompatActivity()  {
                 whBtn.isVisible= false
                 editBtn.isVisible= false
             }else {
-                val transaction = supportFragmentManager.beginTransaction()
-                transaction.replace(R.id.fgv, listfragment)
-                transaction.commit()
+                transaction(listfragment)
                 addfragment.edit = false
                 fragstate= true
                 addBtn.setImageResource(R.drawable.add_baseline)
@@ -124,9 +119,7 @@ class Main_Menu : AppCompatActivity()  {
             addfragment = addfragment()
             addfragment.edit= true
             addfragment.setview()
-            val transaction = supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.fgv, addfragment)
-            transaction.commit()
+            transaction(addfragment)
             fragstate= false
             addBtn.setImageResource(R.drawable.back_baseline)
         }
@@ -158,14 +151,15 @@ class Main_Menu : AppCompatActivity()  {
 
         }
 
-/**        locationRequest = buildLocationRequest()
-         locationCallback =  buildLocationCallBack()
-        LocationServices.getFusedLocationProviderClient(this).also { fusedLocationClient = it }
-**/
-
-
        }
 
+    override fun onResume() {
+        super.onResume()
+        frgm = this.supportFragmentManager
+        dbHelper.menu = this
+        dbHelper.retriveusername()
+        dbHelper.retrivedata()
+    }
 
  fun setClickList(): OnListClickInterface
  {
@@ -176,8 +170,6 @@ class Main_Menu : AppCompatActivity()  {
              whBtn.isVisible= true
              editBtn.isVisible= true
              selected = adapter.pos
-             val text = findViewById<TextView>(R.id.quantity_text)
-             text.setText(data.size.toString() + "/" + selected.toString())
          }
      }
      return click
@@ -196,9 +188,7 @@ class Main_Menu : AppCompatActivity()  {
 
         val text = findViewById<TextView>(R.id.quantity_text)
         text.setText(data.size.toString() + "/" + "20")
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fgv, listfragment)
-        transaction.commit()
+        transaction(listfragment)
         adapter.notifyDataSetChanged()
 
 
@@ -210,46 +200,20 @@ class Main_Menu : AppCompatActivity()  {
          return adapter
     }
 
+
+
+
     fun savePreset(titolo: String, testo: String) {
 
         val pres = Preset(titolo,testo)
         adapter.notifyDataSetChanged()
         addBtn.setImageResource(R.drawable.add_baseline)
-       // delBtn.isVisible= false
-       // copBtn.isVisible= false
-       // whBtn.isVisible= false
         fragstate = !fragstate
         dbHelper.save(pres)
-        //addfragment = addfragment()
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fgv, listfragment)
-        transaction.commit()
+        transaction(listfragment)
     }
 
-/**
-    private fun buildLocationRequest() : LocationRequest{
-       val locationRequest = LocationRequest()
-        locationRequest!!.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-        locationRequest!!.setInterval(100)
-        locationRequest!!.setFastestInterval(100)
-        locationRequest!!.setSmallestDisplacement(1f)
-        return locationRequest
-    }
 
-    private fun buildLocationCallBack() : LocationCallback {
-        val locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                for (location in locationResult.locations) {
-                     latitude = location.latitude
-                     longitude = location.longitude
-
-                }
-
-            }
-        }
-        return locationCallback
-    }
-**/
     fun positionattachment(checked: Boolean) {
 
         locationup = !locationup
@@ -278,9 +242,7 @@ class Main_Menu : AppCompatActivity()  {
             sendIntent.action = Intent.ACTION_SEND
             sendIntent.putExtra(Intent.EXTRA_TEXT, message)
             sendIntent.type = "text/plain"
-
             sendIntent.setPackage("com.whatsapp")
-
 
             startActivity(sendIntent)
         }
@@ -302,7 +264,6 @@ class Main_Menu : AppCompatActivity()  {
         copBtn.isVisible= false
         whBtn.isVisible= false
         fragstate = !fragstate
-        //addfragment = addfragment()
         val pres = Preset(titolo,testo)
         dbHelper.change(pres,chiave)
 
@@ -321,7 +282,17 @@ class Main_Menu : AppCompatActivity()  {
         dialog.hide()
     }
 
+    fun transaction(fragment: Fragment)
+    {
 
+        if (!frgm.isDestroyed)
+        {
+            val transaction = frgm.beginTransaction()
+            transaction.replace(R.id.fgv, fragment)
+            transaction.commit()
+            adapter.notifyDataSetChanged()
+        }
+    }
 
 
 

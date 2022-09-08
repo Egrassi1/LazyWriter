@@ -116,8 +116,6 @@ fun retrivedata ()
 
                 }
 
-
-
             }catch(e: Exception)
             {
 
@@ -134,6 +132,7 @@ fun retrivedata ()
         }
     }
     presetdatabase.addValueEventListener(presetListener)
+
 
 
 
@@ -173,6 +172,9 @@ fun retrivedata ()
     fun singout() {
         auth.signOut()
     }
+
+
+
 
 
 }

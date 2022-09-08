@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".addfragment">
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="286dp"
+        android:layout_marginLeft="40dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/Title_text"
+                android:layout_width="214dp"
+                android:layout_height="49dp"
+                android:layout_marginTop="40dp"
+                android:ems="10"
+                android:hint="Titolo"
+                android:inputType="textPersonName" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/preset_text"
+                android:layout_width="220dp"
+                android:layout_height="114dp"
+                android:layout_marginTop="64dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Testo"
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/save_btn"
+                style="@style/app_ButtonStyle"
+                android:layout_width="202dp"
+                android:layout_height="44dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginTop="60dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="Salva" />
+        </TableRow>
+
+    </TableLayout>
+
+</FrameLayout>
