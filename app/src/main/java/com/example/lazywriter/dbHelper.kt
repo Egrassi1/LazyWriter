@@ -17,9 +17,6 @@ import java.io.Serializable
 class dbHelper()
 {
 
-
-
-
     lateinit var menu : Main_Menu
     lateinit var UID : String
     private lateinit var auth: FirebaseAuth
@@ -42,20 +39,21 @@ class dbHelper()
     fun initUser(userName: String) {
         val currenyUser = auth.currentUser
         val uid = currenyUser!!.uid
-        //val userMap = HashMap<String, String>()
+
         val userMap = Preset("name", userName)
-        //userMap["name"] = user.username
+
         val database = FirebaseDatabase
             .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("Users").child(uid)
         database.setValue(userMap)
+
         val preset1 = Preset("prova", "testo di prova")
-        val presdarabse = FirebaseDatabase
+        val presdatabse = FirebaseDatabase
             .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("Users").child(uid).child("Presets").push()
 
 
-        presdarabse.setValue(preset1)
+        presdatabse.setValue(preset1)
 
 
 }
@@ -71,12 +69,13 @@ class dbHelper()
 
 fun retriveusername(){
 
-    menu.startprocd("Caricamento informazioni")
+
     UID = FirebaseAuth.getInstance().currentUser!!.uid
     val database = FirebaseDatabase
         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
         .getReference("Users").child(UID)
     val postListener = object : ValueEventListener {
+
         override fun onDataChange(dataSnapshot: DataSnapshot) {
             // Get Post object and use the values to update the UI
             val post = dataSnapshot.getValue(Preset::class.java) as Preset
@@ -88,7 +87,7 @@ fun retriveusername(){
 
         }
     }
-    database.addValueEventListener(postListener)
+    database.addListenerForSingleValueEvent(postListener)
 }
 
 fun retrivedata ()
@@ -104,6 +103,11 @@ fun retrivedata ()
 
     val presetListener = object : ValueEventListener {
         override fun onDataChange(dataSnapshot: DataSnapshot) {
+            if(menu.frgm.isDestroyed)
+            {
+                presetdatabase.removeEventListener(this)
+                return
+            }
             preList.clear()
             keyList.clear()
             try {
@@ -127,13 +131,9 @@ fun retrivedata ()
 
         override fun onCancelled(error: DatabaseError) {
 
-
-
         }
     }
     presetdatabase.addValueEventListener(presetListener)
-
-
 
 
 }
@@ -147,6 +147,7 @@ fun retrivedata ()
 
     }
 
+
     fun delete(s: String) {
 
         val presdarabse=     FirebaseDatabase
@@ -154,6 +155,7 @@ fun retrivedata ()
             .getReference("Users").child(UID).child("Presets").child(s)
         presdarabse.removeValue()
     }
+
 
     fun change(pres: Preset, chiave: String) {
         val presdarabse=     FirebaseDatabase
@@ -166,7 +168,6 @@ fun retrivedata ()
     fun isLogged(): Boolean {
         val currentUser = auth.currentUser
         return currentUser != null
-
     }
 
     fun singout() {

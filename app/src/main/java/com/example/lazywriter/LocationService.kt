@@ -1,6 +1,7 @@
 package com.example.lazywriter
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,7 +14,6 @@ class LocationService : Service() {
     val binder = MyBinder(this)
     lateinit var locationRequest: LocationRequest
     lateinit var locationCallback: LocationCallback
-    //var locationup = false
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
     var latitude = 0.0
@@ -33,18 +33,8 @@ class LocationService : Service() {
         LocationServices.getFusedLocationProviderClient(this).also { fusedLocationClient = it }
     }
 
+    @SuppressLint("MissingPermission")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-           //?? popup per consentire le autorizzazioni
-        }
         fusedLocationClient?.requestLocationUpdates(
             locationRequest,
             locationCallback,
@@ -82,7 +72,6 @@ class LocationService : Service() {
                 for (location in locationResult.locations) {
                     latitude = location.latitude
                     longitude = location.longitude
-
                 }
 
             }

@@ -21,7 +21,7 @@
 
             <TableRow
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" >
+                android:layout_height="match_parent">
 
                 <ImageButton
                     android:id="@+id/AddButton"
@@ -97,6 +97,7 @@
             android:id="@+id/welcome_tag"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
             android:layout_marginTop="10dp"
             android:text="Bentornato"
             android:textSize="24sp"
@@ -104,8 +105,11 @@
 
         <TextView
             android:id="@+id/quantity_text"
-            android:layout_width="22dp"
+            android:layout_width="57dp"
             android:layout_height="21dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
             android:layout_marginEnd="4dp"
             android:text="0/0" />
 
@@ -120,7 +124,9 @@
             style="@style/app_ButtonStyle"
             android:layout_width="102dp"
             android:layout_height="37dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginBottom="16dp"
+            android:gravity="center_horizontal"
             android:text="Log out" />
 
     </LinearLayout>

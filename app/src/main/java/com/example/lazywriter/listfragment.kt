@@ -13,7 +13,6 @@ import com.google.firebase.database.*
 
 class listfragment() : Fragment() {
 
-   // lateinit var DbHelp : dbHelper
     lateinit var recyclerview : RecyclerView
     lateinit var adapter: CustomAdapter
     lateinit var check : CheckBox
@@ -22,8 +21,6 @@ class listfragment() : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
     }
 
     override fun onCreateView(
@@ -31,18 +28,16 @@ class listfragment() : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        //if(::DbHelp.isInitialized) {
         val view = inflater.inflate(R.layout.fragment_listfragment, container, false)
         recyclerview = view.findViewById<RecyclerView>(R.id.rcvp)
         recyclerview.layoutManager = LinearLayoutManager(view.context)
 
             val adapter = (activity as Main_Menu).retriveAdapter()
             recyclerview.adapter = adapter
-            //DbHelp.retrivedata()
-       // }
+
          check = view.findViewById<CheckBox>(R.id.posbox)
-        check.setOnClickListener{
-            (activity as Main_Menu).positionattachment(check.isChecked)
+         check.setOnClickListener{
+             (activity as Main_Menu).positionattachment(check.isChecked)
         }
         return view
 

@@ -36,7 +36,6 @@
         </activity>
         <activity
             android:name=".Main_Menu"
-
             android:exported="false" />
         <activity
             android:name=".reg_Activity"
