@@ -31,15 +31,24 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
 
         holder.textView.text = ItemsViewModel.title
         holder.textView2.text = previewstring(ItemsViewModel.text)
+        if(position == pos)
+        {
+            holder.itemView.setBackgroundColor(0x6B3A3838)
+            lastsel = holder
+        }else{holder.itemView.setBackgroundColor(0xFFFFFF)}
+
         holder.itemView.setOnClickListener {
             if(::lastsel.isInitialized)
             {
                 lastsel.itemView.setBackgroundColor(0xFFFFFF)
+                lastsel.setIsRecyclable(true)
             }
             holder.itemView.setBackgroundColor(0x6B3A3838)
+            holder.setIsRecyclable(false)
             lastsel = holder
             pos =position
             onclick.OnClick(position)
+
         }
     }
 

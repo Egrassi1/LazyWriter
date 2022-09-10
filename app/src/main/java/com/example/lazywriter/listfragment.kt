@@ -36,6 +36,7 @@ class listfragment() : Fragment() {
             recyclerview.adapter = adapter
 
 
+
         return view
 
     }
