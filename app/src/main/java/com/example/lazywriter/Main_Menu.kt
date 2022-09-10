@@ -430,9 +430,13 @@ class Main_Menu : AppCompatActivity()  {
         if(!addfragment.edit) {
             testo = data[selected].text
         }else{  testo = addfragment.testo.text.toString()}
-        if(check.isChecked)  testo = testo + "\n" +
-                "latitudine: "+  mService.getLat().toString()+ "; longitudine: "+ mService.getLong().toString()+
-                " http://maps.google.com/?ie=UTF8&hq=&ll="+mService.getLat().toString()+","+mService.getLong().toString()+"&z=13"
+        if(check.isChecked) {
+            val latitudine = mService.getLat().toString()
+            val longitudine = mService.getLong().toString()
+            testo = testo + "\n" +
+                    "latitudine: $latitudine; longitudine:$longitudine;\n"+
+                    "http://maps.google.com/?ie=UTF8&hq=&ll=$latitudine,$longitudine&z=13"
+        }
 
         return testo
     }
