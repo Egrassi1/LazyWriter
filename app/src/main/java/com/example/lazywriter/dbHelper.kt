@@ -70,7 +70,7 @@ class dbHelper()
 fun retriveusername(){
 
 
-    UID = FirebaseAuth.getInstance().currentUser!!.uid
+
     val database = FirebaseDatabase
         .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
         .getReference("Users").child(UID)
@@ -92,7 +92,7 @@ fun retriveusername(){
 
 fun retrivedata ()
 {
-
+    UID = FirebaseAuth.getInstance().currentUser!!.uid
     val keyList = ArrayList<String>()
     val preList = ArrayList<Preset>()
     val data = HashMap<String,Preset>()

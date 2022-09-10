@@ -85,12 +85,6 @@
 
             </LinearLayout>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="67dp"
-                android:backgroundTint="#FFFFFF">
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
         <TextView
@@ -112,9 +106,21 @@
             android:layout_marginEnd="4dp"
             android:text="0/0" />
 
+        <CheckBox
+            android:id="@+id/posbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="0dp"
+            android:text="Allega la tua posizione"
+            app:layout_constraintBottom_toBottomOf="@+id/fgv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.067"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="195dp">
+            android:layout_height="180dp">
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fgv"

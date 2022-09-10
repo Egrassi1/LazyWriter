@@ -1,7 +1,6 @@
 package com.example.lazywriter
 
 import android.app.Activity
-import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -20,7 +19,8 @@ class login_activity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_login)
+
         var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult() ) { result ->
             if (result.resultCode == Activity.RESULT_OK){
                 val mail = result.data?.getStringExtra(("email"))
@@ -60,6 +60,7 @@ class login_activity : AppCompatActivity() {
 
         }
     }
+
 
     private fun onLoginClick(email: String, password: String) {
         btn_login.isEnabled = false

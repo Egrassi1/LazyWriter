@@ -5,12 +5,10 @@ import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
-import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -21,16 +19,17 @@ import androidx.fragment.app.Fragment
 class Main_Menu : AppCompatActivity()  {
 
     //elementi della view
-    lateinit var     addBtn : ImageButton
-    lateinit var   delBtn : ImageButton
-    lateinit var  copBtn : ImageButton
+    lateinit var addBtn : ImageButton
+    lateinit var delBtn : ImageButton
+    lateinit var copBtn : ImageButton
     lateinit var whBtn :   ImageButton
     lateinit var editBtn: ImageButton
     lateinit var outBtn : Button
     lateinit var adapter: CustomAdapter
     lateinit var dialog: ProgressDialog
-
-
+    lateinit var username : String
+    lateinit var check : CheckBox
+    var coutindex = 0
 
   //gestione dei fragment
     private var listfragment  = listfragment()
@@ -41,7 +40,9 @@ class Main_Menu : AppCompatActivity()  {
 
     // servizio di geolocalizzazione
     private var location: Location? = null
+
     lateinit var mService : LocationService
+
     val servcConn = object : ServiceConnection {
         override fun onServiceDisconnected(compName: ComponentName?) { }
         override fun onServiceConnected(compName: ComponentName?, binder: IBinder?) {
@@ -49,7 +50,7 @@ class Main_Menu : AppCompatActivity()  {
         }
         override fun onBindingDied(compName: ComponentName) {}
     }
-    var locationup = false
+
 
     //oggetto per l'accesso a firebase
     lateinit var  dbHelper : dbHelper
@@ -71,10 +72,11 @@ class Main_Menu : AppCompatActivity()  {
         copBtn = findViewById<ImageButton>(R.id.CopyButton)
         whBtn = findViewById<ImageButton>(R.id.WhaButton)
 
-        delBtn.isVisible= false
-        copBtn.isVisible= false
-        whBtn.isVisible= false
-        editBtn.isVisible= false
+
+        check = findViewById<CheckBox>(R.id.posbox)
+        check.setOnClickListener{
+           positionattachment(check.isChecked)
+        }
 
         outBtn.setOnClickListener()
         {
@@ -93,59 +95,36 @@ class Main_Menu : AppCompatActivity()  {
 
         addBtn.setOnClickListener {
             if (fragstate) {
+                state1()
                 addfragment = addfragment()
-                addfragment.edit= false
                 addfragment.setview()
                 transaction(addfragment)
-
-                addBtn.setImageResource(R.drawable.back_baseline)
-                delBtn.isVisible= false
-                copBtn.isVisible= false
-                whBtn.isVisible= false
-                editBtn.isVisible= false
-
-                fragstate= false
-
+                coutindex= 1
             }else {
+                state0()
                 transaction(listfragment)
-                addfragment.edit = false
-                addBtn.setImageResource(R.drawable.add_baseline)
-                delBtn.isVisible= false
-                copBtn.isVisible= false
-                whBtn.isVisible= false
-                editBtn.isVisible= false
-                fragstate= true
+                coutindex= 0
             }
 
         }
 
         editBtn.setOnClickListener {
-            editBtn.isVisible= false
+
             addfragment = addfragment()
-            addfragment.edit= true
             addfragment.setview()
             transaction(addfragment)
-            addBtn.setImageResource(R.drawable.back_baseline)
-            fragstate= false
+            coutindex= 2
+            state2()
         }
 
         delBtn.setOnClickListener {
-            locationup = false
-            //listfragment = listfragment()
+            listfragment = listfragment()
             dbHelper.delete(keyList[selected])
-
-            adapter.notifyDataSetChanged()
             if(!fragstate)
             {
-                addfragment.edit = false
-                fragstate= true
-                addBtn.setImageResource(R.drawable.add_baseline)
+                coutindex = 0
             }
-
-            delBtn.isVisible= false
-            copBtn.isVisible= false
-            whBtn.isVisible= false
-            editBtn.isVisible= false
+         state0()
         }
 
         whBtn.setOnClickListener {
@@ -153,22 +132,72 @@ class Main_Menu : AppCompatActivity()  {
             sendMessage(testo)
         }
 
+
+        dbHelper = dbHelper()
+        frgm = this.supportFragmentManager
+        dbHelper.menu = this
+
+
+        if(savedInstanceState != null)
+        {
+            data = savedInstanceState.getSerializable("data") as ArrayList<Preset>
+            keyList = savedInstanceState.getSerializable("key") as ArrayList<String>
+            selected= savedInstanceState.getInt("sel")
+            username = savedInstanceState.getString("username").toString()
+            coutindex =    savedInstanceState.getInt("cout")
+
+            if(coutindex == 0)
+            {
+                state0()
+            }
+            if(coutindex == 1)
+            {
+                state1()
+                addfragment.setview()
+
+            }
+
+            if(coutindex == 2)
+            {
+                state2()
+                transaction(addfragment)
+                addfragment.setview()
+
+            }
+
+
+            MenunotifyUpdate(username)
+            dbHelper.retrivedata()
+
+        }else{
+            state0()
+            startprocd("Caricamento informazioni")
+            dbHelper.retrivedata()
+            dbHelper.retriveusername()
+
+        }
     }
+
 
 
     override fun onResume() {
         super.onResume()
-        if(freshstart) {
-            dbHelper = dbHelper()
-            frgm = this.supportFragmentManager
-            dbHelper.menu = this
+        if(check.isChecked)
+        {
+            positionattachment(check.isChecked)
+        }
 
-            startprocd("Caricamento informazioni")
-            dbHelper.retriveusername()
-            dbHelper.retrivedata()
-        }else{recreate()}
     }
 
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("cout", coutindex)
+        outState.putString("username",username)
+        outState.putSerializable("data", data)
+        outState.putSerializable("key",keyList)
+        outState.putInt("sel",selected)
+    }
 
     override fun onRequestPermissionsResult(
     requestCode: Int,
@@ -179,47 +208,70 @@ class Main_Menu : AppCompatActivity()  {
     this.recreate()
     }
 
+//metodi per gli stati possibili della UI
+  private  fun state0()
+    {
+        delBtn.isVisible= false
+        copBtn.isVisible= false
+        whBtn.isVisible= false
+        editBtn.isVisible= false
+        addBtn.setImageResource(R.drawable.add_baseline)
 
-
-    fun MenunotifyUpdate(username : String)
- {
-     val tag = findViewById<TextView>(R.id.welcome_tag)
-     tag.setText("Bentornato "+ username)
- }
-
-
-    fun notifyData(post: ArrayList<Preset>, keys : ArrayList<String>) {
-
-        data= post
-        keyList = keys
-
-        val text = findViewById<TextView>(R.id.quantity_text)
-        text.setText(data.size.toString() + "/" + "20")
-        transaction(listfragment)
-        adapter.notifyDataSetChanged()
+        fragstate = true
+        addfragment.edit= false
     }
 
-  //salvataggio del preset
+  private  fun state1()
+    {
+
+        delBtn.isVisible= false
+        copBtn.isVisible= false
+        whBtn.isVisible= false
+        editBtn.isVisible= false
+        addBtn.setImageResource(R.drawable.back_baseline)
+
+        fragstate= false
+        addfragment.edit= false
+
+    }
+  private  fun state2()
+    {
+        delBtn.isVisible= true
+        copBtn.isVisible= true
+        whBtn.isVisible= true
+        editBtn.isVisible= false
+        addBtn.setImageResource(R.drawable.back_baseline)
+
+        fragstate= false
+        addfragment.edit= true
+
+    }
+
+
+
+
+    //salvataggio del preset
     fun savePreset(titolo: String, testo: String) {
 
-        val pres = Preset(titolo,testo)
-        adapter.notifyDataSetChanged()
-        addBtn.setImageResource(R.drawable.add_baseline)
-        fragstate = !fragstate
-        dbHelper.save(pres)
-        transaction(listfragment)
+      val pres = Preset(titolo,testo)
+      dbHelper.save(pres)
+      if(::adapter.isInitialized)
+      {
+          adapter.notifyDataSetChanged()
+      }else{ transaction(listfragment)}
+      state0()
+      coutindex= 0
     }
 
     //modifica del preset
     fun ChangePreset(titolo: String, testo: String, chiave: String) {
-        adapter.notifyDataSetChanged()
-        addBtn.setImageResource(R.drawable.add_baseline)
-        delBtn.isVisible= false
-        copBtn.isVisible= false
-        whBtn.isVisible= false
-        fragstate = !fragstate
+
         val pres = Preset(titolo,testo)
         dbHelper.change(pres,chiave)
+        transaction(listfragment)
+        state0()
+        coutindex = 0
+
 
     }
 
@@ -248,6 +300,30 @@ class Main_Menu : AppCompatActivity()  {
 
     }
 
+
+//imposta i dati restituiti da dbHelper.retriveUsername
+    fun MenunotifyUpdate(username : String)
+    {
+        this.username = username
+        val tag = findViewById<TextView>(R.id.welcome_tag)
+        tag.setText("Bentornato "+ username)
+    }
+
+    //imposta i dati restituiti da dbHelper.retrivedata
+    fun notifyData(post: ArrayList<Preset>, keys : ArrayList<String>) {
+
+        data= post
+        keyList = keys
+
+        val text = findViewById<TextView>(R.id.quantity_text)
+        text.setText(data.size.toString() + "/" + "20")
+        if(::adapter.isInitialized) {
+            transaction(listfragment)
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+
     //metodo che imposta il clicklistener per il viewholder
     fun setClickList(): OnListClickInterface
     {
@@ -273,7 +349,12 @@ class Main_Menu : AppCompatActivity()  {
     //metodo che imposta e gestisce il service di posizione
     fun positionattachment(checked: Boolean) {
 
-        locationup = !locationup
+        var service = false
+        val lm = this.getSystemService(LOCATION_SERVICE) as LocationManager
+        service= lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if(service) {
+       // locationup = !locationup
         if (checked) {
             val intentBg = Intent(this, LocationService::class.java)
             bindService(intentBg, servcConn, BIND_AUTO_CREATE)
@@ -286,7 +367,6 @@ class Main_Menu : AppCompatActivity()  {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
 
-
                 val requestcode = 0
                 ActivityCompat.requestPermissions(
                     this,
@@ -298,19 +378,26 @@ class Main_Menu : AppCompatActivity()  {
                 )
 
 
-
             }
-
             startService(intentBg)
         } else {
             val intentBg = Intent(this, LocationService::class.java)
             unbindService(servcConn)
             stopService(intentBg)
         }
+        }else {
+            Toast.makeText(
+                this,
+                "Devi prima attivare la geolocalizzazione!",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+            check.isChecked=false
+        }
 
     }
 
-
+ //metodo che genera un dialog di caricamento(allo startup dell'applicazione
     fun startprocd(message: String )
     {
         dialog = ProgressDialog(this)
@@ -326,26 +413,24 @@ class Main_Menu : AppCompatActivity()  {
         dialog.hide()
     }
 
+    //metodo che gestisce le transaction tra i fragment
     fun transaction(fragment: Fragment)
     {
 
-        //if (!frgm.isDestroyed)
-        //{
             val transaction = frgm.beginTransaction()
             transaction.replace(R.id.fgv, fragment)
             transaction.commit()
-            adapter.notifyDataSetChanged()
-       // }
 
     }
 
+    //metodo che genera il testo per la clipboard
     fun createtext(): String
     {
         var testo: String
         if(!addfragment.edit) {
             testo = data[selected].text
         }else{  testo = addfragment.testo.text.toString()}
-        if(locationup)  testo = testo + "\n" +
+        if(check.isChecked)  testo = testo + "\n" +
                 "latitudine: "+  mService.getLat().toString()+ "; longitudine: "+ mService.getLong().toString()
         return testo
     }
