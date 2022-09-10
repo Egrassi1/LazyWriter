@@ -431,7 +431,9 @@ class Main_Menu : AppCompatActivity()  {
             testo = data[selected].text
         }else{  testo = addfragment.testo.text.toString()}
         if(check.isChecked)  testo = testo + "\n" +
-                "latitudine: "+  mService.getLat().toString()+ "; longitudine: "+ mService.getLong().toString()
+                "latitudine: "+  mService.getLat().toString()+ "; longitudine: "+ mService.getLong().toString()+
+                " http://maps.google.com/?ie=UTF8&hq=&ll="+mService.getLat().toString()+","+mService.getLong().toString()+"&z=13"
+
         return testo
     }
 
