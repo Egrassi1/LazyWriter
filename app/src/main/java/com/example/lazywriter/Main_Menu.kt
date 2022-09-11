@@ -1,6 +1,7 @@
 package com.example.lazywriter
 
 import android.Manifest
+import android.app.ActivityManager
 import android.app.ProgressDialog
 import android.content.*
 import android.content.pm.PackageManager
@@ -9,7 +10,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
@@ -118,7 +118,7 @@ class Main_Menu : AppCompatActivity()  {
         }
 
         delBtn.setOnClickListener {
-            listfragment = listfragment()
+            //listfragment = listfragment()
             dbHelper.delete(keyList[selected])
             if(!fragstate)
             {
@@ -178,14 +178,25 @@ class Main_Menu : AppCompatActivity()  {
         }
     }
 
+    override fun onDestroy() {
+        if(check.isChecked)
+        {
+            val intentBg = Intent(this, LocationService::class.java)
+            unbindService(servcConn)
+            stopService(intentBg)
+        }
+        super.onDestroy()
 
+    }
 
     override fun onResume() {
         super.onResume()
+
         if(check.isChecked)
         {
             positionattachment(check.isChecked)
         }
+
 
     }
 
@@ -320,6 +331,7 @@ class Main_Menu : AppCompatActivity()  {
         if(::adapter.isInitialized) {
             transaction(listfragment)
             adapter.notifyDataSetChanged()
+            adapter.pos= -1
         }
     }
 
@@ -349,15 +361,15 @@ class Main_Menu : AppCompatActivity()  {
     //metodo che imposta e gestisce il service di posizione
     fun positionattachment(checked: Boolean) {
 
+
         var service = false
         val lm = this.getSystemService(LOCATION_SERVICE) as LocationManager
         service= lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
         if(service) {
        // locationup = !locationup
-        if (checked) {
-            val intentBg = Intent(this, LocationService::class.java)
-            bindService(intentBg, servcConn, BIND_AUTO_CREATE)
+        if (checked ) {
+
             if (ActivityCompat.checkSelfPermission(
                     this,
                     Manifest.permission.ACCESS_FINE_LOCATION
@@ -376,9 +388,9 @@ class Main_Menu : AppCompatActivity()  {
                     ),
                     requestcode
                 )
-
-
             }
+            val intentBg = Intent(this, LocationService::class.java)
+            bindService(intentBg, servcConn, BIND_AUTO_CREATE)
             startService(intentBg)
         } else {
             val intentBg = Intent(this, LocationService::class.java)
@@ -416,7 +428,6 @@ class Main_Menu : AppCompatActivity()  {
     //metodo che gestisce le transaction tra i fragment
     fun transaction(fragment: Fragment)
     {
-
             val transaction = frgm.beginTransaction()
             transaction.replace(R.id.fgv, fragment)
             transaction.commit()

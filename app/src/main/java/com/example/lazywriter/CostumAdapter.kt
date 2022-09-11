@@ -12,6 +12,11 @@ import com.google.firebase.database.collection.LLRBNode
 class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInterface ) : RecyclerView.Adapter<CustomAdapter.ViewHolder>()
 {
 
+    companion object
+    {
+        val reinitialize = false
+    }
+
     lateinit var lastsel: ViewHolder
     var pos = -1
 
@@ -20,7 +25,6 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item, parent, false)
-
         return ViewHolder(view)
     }
 
@@ -73,6 +77,7 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
         val imageView: ImageView = itemView.findViewById(R.id.Pic)
         val textView: TextView = itemView.findViewById(R.id.Name)
         val textView2: TextView = itemView.findViewById(R.id.textView3)
+
 
 
     }

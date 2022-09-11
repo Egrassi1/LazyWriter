@@ -11,6 +11,7 @@ import com.google.android.gms.location.*
 
 class LocationService : Service() {
 
+
     val binder = MyBinder(this)
     lateinit var locationRequest: LocationRequest
     lateinit var locationCallback: LocationCallback
