@@ -197,7 +197,6 @@ class Main_Menu : AppCompatActivity()  {
             positionattachment(check.isChecked)
         }
 
-
     }
 
 
@@ -406,6 +405,8 @@ class Main_Menu : AppCompatActivity()  {
                 .show()
             check.isChecked=false
         }
+
+
 
     }
 
