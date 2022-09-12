@@ -21,6 +21,7 @@ class login_activity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+
         var resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult() ) { result ->
             if (result.resultCode == Activity.RESULT_OK){
                 val mail = result.data?.getStringExtra(("email"))
@@ -53,6 +54,7 @@ class login_activity : AppCompatActivity() {
                 passwordEditText.error = "Inserisci la password"
                 check = false
             }
+
             if(check)
             {
              onLoginClick(email,password)

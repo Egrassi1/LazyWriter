@@ -36,11 +36,8 @@ class Main_Menu : AppCompatActivity()  {
     private var addfragment = addfragment()
     var frgm =  supportFragmentManager
     private var fragstate = true
-    var freshstart = true
 
     // servizio di geolocalizzazione
-    private var location: Location? = null
-
     lateinit var mService : LocationService
 
     val servcConn = object : ServiceConnection {
@@ -89,7 +86,7 @@ class Main_Menu : AppCompatActivity()  {
         copBtn.setOnClickListener {
             var testo = createtext()
             val clipboard = applicationContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val clip = ClipData.newPlainText("", testo)
+            val clip = ClipData.newPlainText("" , testo)
             clipboard.setPrimaryClip(clip)
         }
 
@@ -123,8 +120,9 @@ class Main_Menu : AppCompatActivity()  {
             if(!fragstate)
             {
                 coutindex = 0
+                state0()
             }
-         state0()
+
         }
 
         whBtn.setOnClickListener {
@@ -165,7 +163,6 @@ class Main_Menu : AppCompatActivity()  {
 
             }
 
-
             MenunotifyUpdate(username)
             dbHelper.retrivedata()
 
@@ -191,12 +188,10 @@ class Main_Menu : AppCompatActivity()  {
 
     override fun onResume() {
         super.onResume()
-
         if(check.isChecked)
         {
             positionattachment(check.isChecked)
         }
-
     }
 
 
@@ -209,14 +204,7 @@ class Main_Menu : AppCompatActivity()  {
         outState.putInt("sel",selected)
     }
 
-    override fun onRequestPermissionsResult(
-    requestCode: Int,
-    permissions: Array<out String>,
-    grantResults: IntArray
-    ) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    this.recreate()
-    }
+
 
 //metodi per gli stati possibili della UI
   private  fun state0()
@@ -258,8 +246,6 @@ class Main_Menu : AppCompatActivity()  {
     }
 
 
-
-
     //salvataggio del preset
     fun savePreset(titolo: String, testo: String) {
 
@@ -278,6 +264,9 @@ class Main_Menu : AppCompatActivity()  {
 
         val pres = Preset(titolo,testo)
         dbHelper.change(pres,chiave)
+
+        // è necessario comunque fare la transaction perché se si clicca su modifica senza
+        // aver effettivamente modificato nulla il notifydatasetchanged non produce alcun risultato
         transaction(listfragment)
         state0()
         coutindex = 0
@@ -334,7 +323,6 @@ class Main_Menu : AppCompatActivity()  {
         }
     }
 
-
     //metodo che imposta il clicklistener per il viewholder
     fun setClickList(): OnListClickInterface
     {
@@ -360,13 +348,12 @@ class Main_Menu : AppCompatActivity()  {
     //metodo che imposta e gestisce il service di posizione
     fun positionattachment(checked: Boolean) {
 
-
         var service = false
         val lm = this.getSystemService(LOCATION_SERVICE) as LocationManager
         service= lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
         if(service) {
-       // locationup = !locationup
+
         if (checked ) {
 
             if (ActivityCompat.checkSelfPermission(
@@ -408,6 +395,15 @@ class Main_Menu : AppCompatActivity()  {
 
 
 
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        this.recreate()
     }
 
  //metodo che genera un dialog di caricamento(allo startup dell'applicazione

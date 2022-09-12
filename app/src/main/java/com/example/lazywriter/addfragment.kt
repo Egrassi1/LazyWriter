@@ -19,8 +19,6 @@ class addfragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
     }
 
     override fun onCreateView(
@@ -47,7 +45,6 @@ class addfragment : Fragment() {
 
 
             if(edit) {
-
                 btnAdd.setText("Modifica")
                 titolo.setText((activity as Main_Menu).data[(activity as Main_Menu).selected].title)
                 testo.setText((activity as Main_Menu).data[(activity as Main_Menu).selected].text)
@@ -59,7 +56,9 @@ class addfragment : Fragment() {
                     )
                 }
             } else {
+
                 btnAdd.setOnClickListener {
+
                     if((activity as Main_Menu).data.size <20) {
                         var check = true
                         if (titolo.text.toString().isEmpty()) {

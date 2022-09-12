@@ -18,10 +18,12 @@ class LoadingAct : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading2)
         btn = findViewById<Button>(R.id.loadbtn)
+
         btn.setOnClickListener{
 
             Loading()
         }
+
         Loading()
 
         }
@@ -40,6 +42,7 @@ class LoadingAct : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             }
+
         } else {
             val builder = AlertDialog.Builder(this)
             with(builder)
@@ -68,9 +71,10 @@ class LoadingAct : AppCompatActivity() {
                 val connectivityManager =
                     this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+
                     val actinfo =
                         connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                    if (actinfo!= null) {
+                    if (actinfo != null) {
                         return true
                     }
                 }

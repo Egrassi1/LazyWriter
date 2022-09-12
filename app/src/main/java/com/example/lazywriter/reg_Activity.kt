@@ -14,7 +14,6 @@ class reg_Activity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_reg2)
         val btn_reg_sub = findViewById<Button>(R.id.btn_reg_sub)
@@ -53,6 +52,7 @@ class reg_Activity : AppCompatActivity() {
                 resultIntent.putExtra("password", password)
                 setResult(Activity.RESULT_OK, resultIntent)
                 finish()
+
             }   else {
                 val builder = AlertDialog.Builder(this)
                 with(builder)

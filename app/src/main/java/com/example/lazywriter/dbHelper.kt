@@ -30,15 +30,13 @@ class dbHelper()
 
            val result = auth.createUserWithEmailAndPassword(email, password)
 
-
-
         return result
 
         }
 
     fun initUser(userName: String) {
-        val currenyUser = auth.currentUser
-        val uid = currenyUser!!.uid
+        val currentUser = auth.currentUser
+        val uid = currentUser!!.uid
 
         val userMap = Preset("name", userName)
 
@@ -52,7 +50,6 @@ class dbHelper()
             .getInstance("https://lazywriter-fe624-default-rtdb.europe-west1.firebasedatabase.app/")
             .getReference("Users").child(uid).child("Presets").push()
 
-
         presdatabse.setValue(preset1)
 
 
@@ -61,14 +58,12 @@ class dbHelper()
      fun loginUser(email: String, password: String): Task<AuthResult> {
 
          val res = auth.signInWithEmailAndPassword(email, password)
-
             return  res
              //return "OK"
 
             }
 
 fun retriveusername(){
-
 
 
     val database = FirebaseDatabase

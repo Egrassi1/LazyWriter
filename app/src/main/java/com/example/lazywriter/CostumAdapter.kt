@@ -9,13 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.database.collection.LLRBNode
 
+
 class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInterface ) : RecyclerView.Adapter<CustomAdapter.ViewHolder>()
 {
-
-    companion object
-    {
-        val reinitialize = false
-    }
 
     lateinit var lastsel: ViewHolder
     var pos = -1
@@ -35,6 +31,7 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
 
         holder.textView.text = ItemsViewModel.title
         holder.textView2.text = previewstring(ItemsViewModel.text)
+
         if(position == pos)
         {
             holder.itemView.setBackgroundColor(0x6B3A3838)
@@ -55,6 +52,7 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
 
         }
     }
+
 
     // return the number of the items in the list
     override fun getItemCount(): Int {
@@ -77,9 +75,6 @@ class CustomAdapter(private val mList: List<Preset>, var onclick: OnListClickInt
         val imageView: ImageView = itemView.findViewById(R.id.Pic)
         val textView: TextView = itemView.findViewById(R.id.Name)
         val textView2: TextView = itemView.findViewById(R.id.textView3)
-
-
-
     }
 
 
